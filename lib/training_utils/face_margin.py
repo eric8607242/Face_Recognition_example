@@ -4,6 +4,21 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+def get_margin_module(margin_module_name, embeddings_size, class_nums, margin, s):
+    if margin_module_name == "arcface":
+        margin_module = ArcFace(embeddings_size, class_nums, margin, s)
+
+    elif margin_module_name == "cosface":
+        margin_module = CosFace(embeddings_size, class_nums, margin, s)
+
+    elif margin_module_name == "sphereface":
+        margin_module = SphereFace(embeddings_size, class_nums, margin, s)
+
+    elif margin_module_name == "softmax":
+        margin_module = nn.Sequential()
+
+    return margin_module
+
 
 class SphereFace(nn.Module):
     """
@@ -12,7 +27,7 @@ class SphereFace(nn.Module):
     
     The annealing optimization strategy for A-Softmax loss.
     """
-    def __init__(self, embeddings_size, class_nums, margin, s):
+    def __init__(self, embeddings_size, class_nums, margin, s, MAXLAMBDA=None, MINLAMBDA=None):
         super(SphereFace, self).__init__()
 
         self.identity_weights = nn.Parameter(torch.Tensor(embeddings_size, class_nums))
@@ -21,8 +36,8 @@ class SphereFace(nn.Module):
         self.s = s
 
         # The hyperparameter of annealing optimization
-        self.MAXLAMBDA = None
-        self.MINLAMBDA = None
+        self.MAXLAMBDA = MAXLAMBDA
+        self.MINLAMBDA = MINLAMBDA
         self.lamb = self.MAXLAMBDA
         # ============================================
 
