@@ -4,7 +4,7 @@ from .evaluate import evaluate
 
 
 class Trainer:
-    def __init__(self, criterion, optimizer, epochs, writer, logger, device, embeddings_size):
+    def __init__(self, criterion, optimizer, lr_scheduler, epochs, writer, logger, device, embeddings_size):
         self.top1 = AverageMeter()
         self.top5 = AverageMeter()
         self.losses = AverageMeter()
@@ -12,6 +12,7 @@ class Trainer:
 
         self.criterion = criterion
         self.optimizer = optimizer
+        self.lr_scheduler = lr_scheduler
 
         self.writer = writer
         self.logger = logger
@@ -19,20 +20,22 @@ class Trainer:
         self.epochs = epochs
         self.embeddings_size = embeddings_size
 
-    def train_loop(self, model, train_loader, val_loader):
+    def train_loop(self, model, margin_module, train_loader, val_loader):
         best_top1_acc = 0.0
 
         for epoch in range(self.epochs):
-            self._training_step(model, train_loader)
-            val_top1 = self.validate(model, val_loader)
+            self._training_step(model, margin_module, train_loader, epoch)
+            #val_top1 = self.validate(model, val_loader)
 
-            if val_top1 > best_top1_acc:
-                self.logger.info("Best validation top1-acc : {}!".format(val_top1))
-                best_top1_acc = val_top1
+            self.lr_scheduler.step()
+
+            #if val_top1 > best_top1_acc:
+                #self.logger.info("Best validation top1-acc : {}!".format(val_top1))
+                #best_top1_acc = val_top1
 
             
 
-    def _training_step(self, model, train_loader):
+    def _training_step(self, model, margin_module, train_loader, epoch):
         model.train()
         start_time = time.time()
 
@@ -43,6 +46,7 @@ class Trainer:
             self.optimizer.zero_grad()
 
             outs = model(X)
+            outs = margin_module(outs, y)
 
             loss = self.criterion(outs, y)
             loss.backward()

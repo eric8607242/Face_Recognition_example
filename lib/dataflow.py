@@ -79,7 +79,7 @@ def _get_dataset(dataset, data_path, transform, train=True):
     elif dataset == "imagenet":
         return datasets.ImageFolder(root=data_path, transform=transform)
 
-    elif dataset == "casia_webface":
+    elif dataset == "casia":
         return datasets.ImageFolder(root=data_path, transform=transform)
 
     else:
@@ -105,7 +105,7 @@ def _get_train_transform(dataset):
                 transforms.Normalize(IMAGENET_MEAN, IMAGENET_STD)
             ])
 
-    elif dataset == "casia_webface":
+    elif dataset == "casia":
         # Face transforms
         train_transform = transforms.Compose([
                 transforms.Resize(112),

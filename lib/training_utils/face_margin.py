@@ -9,8 +9,7 @@ def get_margin_module(margin_module_name, embeddings_size, class_nums, margin, s
         margin_module = ArcFace(embeddings_size, class_nums, margin, s)
 
     elif margin_module_name == "cosface":
-        margin_module = CosFace(embeddings_size, class_nums, margin, s)
-
+        margin_module = CosFace(embeddings_size, class_nums, margin, s) 
     elif margin_module_name == "sphereface":
         margin_module = SphereFace(embeddings_size, class_nums, margin, s)
 
@@ -72,7 +71,7 @@ class SphereFace(nn.Module):
         one_hot.scatter_(dim=1, index=label.view(-1, 1), src=1) # set the value to 1 according to the label
 
         # Annealing optimization. Annealing from Softmax to A-Softmax, which make training more stable.
-        output = (one_hot * (phi_theta - cos_theta)) / (1 + self.lamb)) + cos_theta # Utilize annealing for gt class. Otherwise utilize normalize cos_theta
+        output = (one_hot * (phi_theta - cos_theta)) / (1 + self.lamb) + cos_theta # Utilize annealing for gt class. Otherwise utilize normalize cos_theta
         output *= x_norm.view(-1, 1)
 
         return output
@@ -122,9 +121,14 @@ class ArcFace(nn.Module):
         self.threshold = math.cos(math.pi - margin)
         self.margin_cosface = math.sin(math.pi - margin) * margin
 
+        self.cos_m = math.cos(margin)
+        self.sin_m = math.sin(margin)
+
+        self.mm = math.sin(math.pi - self.margin) * self.margin
+
         self.s = s
 
-    def forward(self, embeddings):
+    def forward(self, embeddings, label):
         identity_weights_norm = F.normalize(self.identity_weights, p=2)
 
         cos_theta = torch.mm(embeddings, identity_weights_norm)
@@ -133,10 +137,10 @@ class ArcFace(nn.Module):
         cos_theta_2 = torch.pow(cos_theta, 2) # cos(\theta)^2
         sin_theta_2 = 1 - cos_theta_2 # sin(\theta)^2
 
-        sin_theta = torch.sqrt(sin_theta_2)
+        sin_theta = torch.sqrt(torch.clamp(sin_theta_2, 1e-9))
 
         # cos(a - b) = cos(a)cos(b) - sin(a)sin(b)
-        cos_theta_m = cos_theta * cos_m - sin_theta * sin_m # cos(\theta - m)
+        cos_theta_m = cos_theta * self.cos_m - sin_theta * self.sin_m # cos(\theta - m)
 
 
         # Control \theta + m range in [0, pi] ============================
@@ -145,7 +149,8 @@ class ArcFace(nn.Module):
         # ================================================================
 
         one_hot = torch.zeros(cos_theta.size(), device=cos_theta.device)
-        one_hot.scatter_(dim=1, index=label.view(-1, 1), src=1) # set the value to 1 according to the label
+        idx = torch.arange(0, label.shape[0], dtype=torch.long)
+        one_hot[torch.arange(0, label.shape[0], dtype=torch.long), label]  = 1
 
         output = (one_hot * cos_theta_m) + ((1.0 - one_hot)*cos_theta) # Add margin to the gt class. Otherwise utilize normalize cos_theta
         output = output * self.s

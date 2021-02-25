@@ -1,10 +1,8 @@
-
-
 def evaluate_roc(thresholds, embeddings, labels, n_folds=10):
     embeddings_1 = embeddings[:embeddings.size(0)//2]
     embeddings_2 = embeddings[embeddings.size(0)//2:]
 
-    fold_pairs = 
+    fold_pairs = None
     fold_thresholds = len(thresholds)
 
     k_fold = KFold(n_splits=n_folds, shuffle=False)

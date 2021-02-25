@@ -26,6 +26,13 @@ def conv_1x1_bn(in_channels,
             nn.BatchNorm2d(out_channels, momentum=bn_momentum, track_running_stats=bn_track_running_stats),
             HSwish()
         )
+    elif activation == "prelu":
+        return nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, 1, 1, 0, bias=False),
+            nn.BatchNorm2d(out_channels, momentum=bn_momentum, track_running_stats=bn_track_running_stats),
+            nn.ReLU6(inplace=True)
+        )
+
 
 class GlobalAveragePooling(nn.Module):
     def forward(self, x):
@@ -61,7 +68,7 @@ class ConvBNAct(nn.Sequential):
 
         super(ConvBNAct, self).__init__()
 
-        assert activation in ["hswish", "relu", None]
+        assert activation in ["hswish", "relu", "prelu", None]
         assert stride in [1, 2, 4]
 
         self.add_module("conv", nn.Conv2d(in_channels, out_channels, kernel_size, stride, pad, groups=group, bias=False))
@@ -71,6 +78,8 @@ class ConvBNAct(nn.Sequential):
             self.add_module("relu", nn.ReLU6(inplace=True))
         elif activation == "hswish":
             self.add_module("hswish", HSwish())
+        elif activation == "prelu":
+            self.add_module("relu", nn.ReLU6(inplace=True))
 
             
 class SEModule(nn.Module):

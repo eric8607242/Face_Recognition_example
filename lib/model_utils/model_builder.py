@@ -8,7 +8,7 @@ from torch.autograd import Variable
 from .network_utils import get_block
 
 class Model(nn.Module):
-    def __init__(self, model_config, margin_module):
+    def __init__(self, model_config, bn_momentum=0.1, bn_track_running_stats=True):
         super(Model, self).__init__()
         self.model_config = model_config
 
@@ -46,7 +46,7 @@ class Model(nn.Module):
                               bn_momentum=bn_momentum,
                               bn_track_running_stats=bn_track_running_stats,
                               **kwargs)
-            self.search_stages.append(layer)
+            self.stages.append(layer)
 
         # Last Stage
         self.last_stages = nn.ModuleList()
@@ -66,8 +66,6 @@ class Model(nn.Module):
                               **kwargs)
             self.last_stages.append(layer)
 
-        self.margin_module = margin_module
-
         self._initialize_weights() 
 
 
@@ -75,13 +73,12 @@ class Model(nn.Module):
         for i, l in enumerate(self.first_stages):
             x = l(x) 
 
-        for i, l in enumerate(self.search_stages):
+        for i, l in enumerate(self.stages):
             x = l(x)
 
         for i, l in enumerate(self.last_stages):
             x = l(x)
 
-        x = self.margin_module(x)
         return x
 
     def _initialize_weights(self):
