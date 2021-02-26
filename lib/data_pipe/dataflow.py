@@ -17,19 +17,19 @@ FACE_MEAN = [0.5, 0.5, 0.5]
 FACE_STD = [0.5, 0.5, 0.5]
 
 
-def get_test_loader(test_dataset_name, test_data_path):
+def get_test_loader(test_dataset_name, test_dataset_path):
     # Turn test_dataset str into list
     test_dataset_name = test_dataset_name.replace(" ", "")
     test_dataset_name = test_dataset_name.split(",")
 
     test_dataset = {}
     for name in test_dataset_name:
-        path_to_test_data = os.path.join(test_data_path, name)
+        path_to_test_data = os.path.join(test_dataset_path, name)
 
-        data = np.load(path_to_test_data, "{}_data.npy".format(name))
-        label = np.load(path_to_test_data, "{}_list.npy".format(name))
+        data = np.load(os.path.join(path_to_test_data, "{}_data.npy".format(name)))
+        label = np.load(os.path.join(path_to_test_data, "{}_list.npy".format(name)))
 
-        test_dataset[dataset] = {
+        test_dataset[name] = {
             "data": data,
             "label": label
         }

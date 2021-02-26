@@ -1,5 +1,8 @@
+from sklearn.model_selection import KFold
+import numpy as np
+
 def evaluate_roc(thresholds, embeddings_1, embeddings_2, labels, n_folds=10):
-    fold_pairs = None
+    fold_pairs = min(len(labels), embeddings_1.shape[0])
     fold_thresholds = len(thresholds)
 
     k_fold = KFold(n_splits=n_folds, shuffle=False)
@@ -10,7 +13,7 @@ def evaluate_roc(thresholds, embeddings_1, embeddings_2, labels, n_folds=10):
     best_thresholds = np.zeros((n_folds))
     indices = np.arange(fold_pairs)
 
-    distance = np.sum(np.square(np.substract(embeddings_1, embeddings_2)), 1)
+    distance = np.sum(np.square(np.subtract(embeddings_1, embeddings_2)), 1)
 
     for fold_idx, (train_set, test_set) in enumerate(k_fold.split(indices)):
         acc_train = np.zeros((fold_thresholds))

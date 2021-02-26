@@ -1,4 +1,9 @@
 import time
+
+import numpy as np
+
+import torch
+
 from ..utils import AverageMeter, accuracy
 from .evaluate import evaluate
 
@@ -13,7 +18,8 @@ class Trainer:
             writer,
             logger,
             device,
-            embeddings_size):
+            embeddings_size,
+            args):
         self.top1 = AverageMeter()
         self.top5 = AverageMeter()
         self.losses = AverageMeter()
@@ -29,12 +35,14 @@ class Trainer:
         self.epochs = epochs
         self.embeddings_size = embeddings_size
 
-    def train_loop(self, model, margin_module, train_loader, val_loader):
+        self.args = args
+
+    def train_loop(self, model, margin_module, train_loader, test_dataset):
         best_top1_acc = 0.0
 
         for epoch in range(self.epochs):
             self._training_step(model, margin_module, train_loader, epoch)
-            self.validate(model, val_loader)
+            self.validate(model, test_dataset)
 
             self.lr_scheduler.step()
 
@@ -79,13 +87,13 @@ class Trainer:
         start_time = time.time()
 
         for k, dataset in test_dataset.items():
-            self.logger("Evaluating on {}".format(k))
+            self.logger.info("Evaluating on {}".format(k))
 
             data = dataset["data"]
             label = dataset["label"]
 
             idx = 0
-            embeddings = np.array(len(data), self.args.embeddings_size)
+            embeddings = np.zeros([len(data), self.args.embeddings_size])
             with torch.no_grad():
                 while idx + self.args.batch_size <= len(data):
                     X = torch.tensor(data[idx:idx + self.args.batch_size])
@@ -107,9 +115,13 @@ class Trainer:
             true_positive_rate, false_positive_rate, accuracy, best_threshold = evaluate(
                 embeddings, label, n_folds=5)
 
+            mean_accuracy = accuracy.mean()
+            mean_best_threshold = best_threshold.mean()
+
             self.logger.info(
-                "Valid : [{}] Accuracy  {} True Positive Rate {} False Positive Rate {} Best Threshold {}".format(
-                    accuracy, true_positive_rate, false_positive_rate, best_threshold))
+                "Valid : [{}] Accuracy  {} Best Threshold {}".format(
+                    k, mean_accuracy, mean_best_threshold))
+
 
     def _epoch_stats_logging(
             self,

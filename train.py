@@ -34,6 +34,10 @@ if __name__ == "__main__":
         args.batch_size,
         args.num_workers)
 
+    test_dataset = get_test_loader(
+        args.test_dataset,
+        args.test_dataset_path)
+
     optimizer = get_optimizer([{"params": model.parameters(),
                                 "params": margin_module.identity_weights}],
                               args.optimizer,
@@ -60,5 +64,6 @@ if __name__ == "__main__":
         writer,
         logger,
         device,
-        args.embeddings_size)
-    trainer.train_loop(model, margin_module, train_loader, train_loader)
+        args.embeddings_size,
+        args)
+    trainer.train_loop(model, margin_module, train_loader, test_dataset)
