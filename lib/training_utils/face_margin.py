@@ -14,9 +14,20 @@ def get_margin_module(margin_module_name, embeddings_size, class_nums, margin, s
         margin_module = SphereFace(embeddings_size, class_nums, margin, s)
 
     elif margin_module_name == "softmax":
-        margin_module = nn.Sequential()
+        margin_module = Softmax(embeddings_size, class_nums)
 
     return margin_module
+
+class Softmax(nn.Module):
+    def __init__(self, embeddings_size, class_nums):
+        super(Softmax, self).__init__()
+
+        self.identity_weights = nn.Parameter(torch.Tensor(embeddings_size, class_nums))
+
+    def forward(self, embeddings, label):
+        output = torch.mm(embeddings, self.identity_weights)
+
+        return output
 
 
 class SphereFace(nn.Module):

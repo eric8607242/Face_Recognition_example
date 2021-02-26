@@ -28,7 +28,7 @@ if __name__ == "__main__":
 
     train_loader = get_train_loader(args.dataset, args.dataset_path, args.batch_size, args.num_workers)
 
-    optimizer = get_optimizer([{"params":model.parameters(), 
+    optimizer = get_optimizer([{"params":model.parameters(),
                                 "params":margin_module.identity_weights}], 
                                 args.optimizer, 
                                 learning_rate=args.lr, 
