@@ -30,7 +30,7 @@ def conv_1x1_bn(in_channels,
         return nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 1, 1, 0, bias=False),
             nn.BatchNorm2d(out_channels, momentum=bn_momentum, track_running_stats=bn_track_running_stats),
-            nn.ReLU6(inplace=True)
+            nn.PReLU6(out_channels)
         )
 
 
@@ -79,7 +79,7 @@ class ConvBNAct(nn.Sequential):
         elif activation == "hswish":
             self.add_module("hswish", HSwish())
         elif activation == "prelu":
-            self.add_module("relu", nn.ReLU6(inplace=True))
+            self.add_module("relu", nn.PReLU(out_channels))
 
             
 class SEModule(nn.Module):

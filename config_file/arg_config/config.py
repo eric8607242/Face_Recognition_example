@@ -13,16 +13,16 @@ def get_init_config():
     parser.add_argument("--model-name",            type=str,    default="mobileface",  help="Model name for backbone")
     parser.add_argument("--margin-module-name",         type=str,    default="arcface",     help="Margin module for model training")
     parser.add_argument("--embeddings-size",       type=int,    default=128)
-    parser.add_argument("--margin",                type=int,    default=128)
-    parser.add_argument("--s",                     type=int,    default=128)
+    parser.add_argument("--margin",                type=float,    default=0.5)
+    parser.add_argument("--s",                     type=float,    default=32)
 
 
     # Datset config
     parser.add_argument("--dataset",               type=str,    default="casia",    help="Name of dataset")
-    parser.add_argument("--dataset-path",          type=str,    default="/workspace/CASIA-maxpy-clean",     help="Path to dataset")
+    parser.add_argument("--dataset-path",          type=str,    default="/workspace/CASIA-WebFace",     help="Path to dataset")
 
     parser.add_argument("--classes",               type=int,    default=10575,           help="Class number for classification")
-    parser.add_argument("--input-size",            type=int,    default=32,            help="Input size of dataset")
+    parser.add_argument("--input-size",            type=int,    default=112,            help="Input size of dataset")
 
     parser.add_argument("--batch-size",            type=int,    default=512,           help="Batch size")
     parser.add_argument("--num-workers",           type=int,    default=4)
