@@ -85,7 +85,7 @@ def get_init_config():
         type=str,
         default="sgd",
         help="Optimizer for supernet training")
-    parser.add_argument("--lr", type=float, default=0.1)
+    parser.add_argument("--lr", type=float, default=0.5)
     parser.add_argument("--weight-decay", type=float, default=0.00005)
     parser.add_argument("--momentum", type=float, default=0.9)
 

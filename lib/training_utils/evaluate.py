@@ -38,11 +38,11 @@ def evaluate_roc(thresholds, embeddings_1, embeddings_2, labels, n_folds=10):
 
 
 def evaluate_accuracy(threshold, distance, labels):
-    true_positive = np.sum(distance[labels == 1] > threshold, dtype=np.float)
-    false_positive = np.sum(distance[labels == -1] > threshold, dtype=np.float)
+    true_positive = np.sum(distance[labels == 1] < threshold, dtype=np.float)
+    false_positive = np.sum(distance[labels == 0] < threshold, dtype=np.float)
 
-    true_negative = np.sum(distance[labels == -1] < threshold, dtype=np.float)
-    false_negative = np.sum(distance[labels == -1] > threshold, dtype=np.float)
+    true_negative = np.sum(distance[labels == 0] > threshold, dtype=np.float)
+    false_negative = np.sum(distance[labels == 1] > threshold, dtype=np.float)
 
     true_positive_rate = 0 if (true_positive + false_negative ==
                                0) else true_positive / (true_positive + false_negative)

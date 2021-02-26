@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 
+from torchvision.utils import save_image
+
 from lib import *
 
 if __name__ == "__main__":
@@ -38,11 +40,10 @@ if __name__ == "__main__":
         args.test_dataset,
         args.test_dataset_path)
 
-    optimizer = get_optimizer([{"params": model.parameters(),
-                                "params": margin_module.identity_weights}],
+    optimizer = get_optimizer([{"params": model.parameters(), "weight_decay":args.weight_decay},
+                               {"params": margin_module.identity_weights}],
                               args.optimizer,
                               learning_rate=args.lr,
-                              weight_decay=args.weight_decay,
                               logger=logger,
                               momentum=args.momentum,
                               alpha=args.alpha,

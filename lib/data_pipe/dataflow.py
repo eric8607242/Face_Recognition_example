@@ -27,6 +27,7 @@ def get_test_loader(test_dataset_name, test_dataset_path):
         path_to_test_data = os.path.join(test_dataset_path, name)
 
         data = np.load(os.path.join(path_to_test_data, "{}_data.npy".format(name)))
+        data = data[:, ::-1, :, :].copy() # BGR to RGB
         label = np.load(os.path.join(path_to_test_data, "{}_list.npy".format(name)))
 
         test_dataset[name] = {

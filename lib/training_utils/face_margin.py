@@ -31,9 +31,12 @@ class Softmax(nn.Module):
 
         self.identity_weights = nn.Parameter(
             torch.Tensor(embeddings_size, class_nums))
+        #self.identity_weights.data.normal_(0, 0.01)
+        nn.init.xavier_uniform_(self.identity_weights)
 
     def forward(self, embeddings, label):
-        output = torch.mm(embeddings, self.identity_weights)
+        identity_weights_norm = F.normalize(self.identity_weights, p=2)
+        output = torch.mm(embeddings, identity_weights_norm)
 
         return output
 
@@ -58,6 +61,7 @@ class SphereFace(nn.Module):
 
         self.identity_weights = nn.Parameter(
             torch.Tensor(embeddings_size, class_nums))
+        self.identity_weights.data.uniform_(-1, 1).renorm_(2,1,1e-5).mul_(1e5)
 
         self.margin = margin
         self.s = s
@@ -119,6 +123,7 @@ class CosFace(nn.Module):
 
         self.identity_weights = nn.Parameter(
             torch.Tensor(embeddings_size, class_nums))
+        self.identity_weights.data.uniform_(-1, 1).renorm_(2,1,1e-5).mul_(1e5)
 
         self.margin = margin
         self.s = s
@@ -153,6 +158,7 @@ class ArcFace(nn.Module):
 
         self.identity_weights = nn.Parameter(
             torch.Tensor(embeddings_size, class_nums))
+        self.identity_weights.data.uniform_(-1, 1).renorm_(2,1,1e-5).mul_(1e5)
 
         self.margin = margin
         self.threshold = math.cos(math.pi - margin)

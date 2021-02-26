@@ -36,7 +36,7 @@ MOBILEFACENET_CFG = {
 
     # block_type, in_channels, out_channels, stride, kernel_size, group, activation, se, kwargs
     "last": [["Conv", 128, 512, 1, 1, 1, "prelu", False, {}],
-             ["Conv", 512, 512, 1, 7, 512, "prelu", False, {}],
+             ["Conv", 512, 512, 1, 7, 512, None, False, {}],
              ["Conv", 512, 128, 1, 1, 1, None, False, {}],
              ["global_average", 0, 0, 0, 0, 0, 0, False, {}]]
 }

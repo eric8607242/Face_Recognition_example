@@ -39,7 +39,7 @@ def get_optimizer(
         model_parameters,
         optimizer_type,
         learning_rate,
-        weight_decay,
+        #weight_decay,
         logger,
         momentum=None,
         alpha=None,
@@ -47,7 +47,7 @@ def get_optimizer(
     logger.info("================= Optimizer =================")
     logger.info("Optimizer : {}".format(optimizer_type))
     logger.info("Learning rate : {}".format(learning_rate))
-    logger.info("Weight decay : {}".format(weight_decay))
+    #logger.info("Weight decay : {}".format(weight_decay))
 
     if optimizer_type == "sgd":
         assert momentum is not None
@@ -55,8 +55,7 @@ def get_optimizer(
         logger.info("Momentum : {}".format(momentum))
         optimizer = torch.optim.SGD(params=model_parameters,
                                     lr=learning_rate,
-                                    momentum=momentum,
-                                    weight_decay=weight_decay)
+                                    momentum=momentum)
 
     elif optimizer_type == "rmsprop":
         assert momentum is not None
@@ -65,8 +64,7 @@ def get_optimizer(
         optimizer = torch.optim.RMSprop(model_parameters,
                                         lr=lr,
                                         alpha=alpha,
-                                        momentum=momentum,
-                                        weight_decay=weight_decay)
+                                        momentum=momentum)
     elif optimizer_type == "adam":
         assert beta is not None
 

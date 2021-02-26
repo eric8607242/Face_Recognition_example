@@ -3,6 +3,7 @@ import time
 import numpy as np
 
 import torch
+import torch.nn.functional as F
 
 from ..utils import AverageMeter, accuracy
 from .evaluate import evaluate
@@ -100,8 +101,9 @@ class Trainer:
                     X = X.to(self.device, non_blocking=True)
 
                     outs = model(X)
+                    norm_outs = F.normalize(outs, p=2)
                     embeddings[idx:idx +
-                               self.args.batch_size] = outs.cpu().numpy()
+                               self.args.batch_size] = norm_outs.cpu().numpy()
 
                     idx += self.args.batch_size
 
@@ -110,7 +112,9 @@ class Trainer:
                     X = X.to(self.device, non_blocking=True)
 
                     outs = model(X)
-                    embeddings[idx:] = outs.cpu().numpy()
+                    norm_outs = F.normalize(outs, p=2)
+                    embeddings[idx:] = norm_outs.cpu().numpy()
+
 
             true_positive_rate, false_positive_rate, accuracy, best_threshold = evaluate(
                 embeddings, label, n_folds=5)
