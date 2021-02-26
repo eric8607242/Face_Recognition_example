@@ -7,8 +7,13 @@ from torch.autograd import Variable
 
 from .network_utils import get_block
 
+
 class Model(nn.Module):
-    def __init__(self, model_config, bn_momentum=0.1, bn_track_running_stats=True):
+    def __init__(
+            self,
+            model_config,
+            bn_momentum=0.1,
+            bn_track_running_stats=True):
         super(Model, self).__init__()
         self.model_config = model_config
 
@@ -31,7 +36,7 @@ class Model(nn.Module):
             self.first_stages.append(layer)
 
         # Stage
-        self.stages= nn.ModuleList()
+        self.stages = nn.ModuleList()
         for l_cfg in model_config["stage"]:
             block_type, in_channels, out_channels, stride, kernel_size, group, activation, se, kwargs = l_cfg
 
@@ -66,12 +71,11 @@ class Model(nn.Module):
                               **kwargs)
             self.last_stages.append(layer)
 
-        self._initialize_weights() 
-
+        self._initialize_weights()
 
     def forward(self, x):
         for i, l in enumerate(self.first_stages):
-            x = l(x) 
+            x = l(x)
 
         for i, l in enumerate(self.stages):
             x = l(x)
@@ -94,5 +98,4 @@ class Model(nn.Module):
             elif isinstance(m, nn.Linear):
                 n = m.weight.size(1)
                 m.weight.data.normal_(0, 0.01)
-                m.bias.data.zero_()  
-
+                m.bias.data.zero_()

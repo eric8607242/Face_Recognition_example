@@ -1,7 +1,15 @@
 import torch
 import torch.nn as nn
 
-def get_lr_scheduler(optimizer, lr_schedule, logger, total_epochs=None, step_per_epoch=None, step_size=None, decay_ratio=None):
+
+def get_lr_scheduler(
+        optimizer,
+        lr_schedule,
+        logger,
+        total_epochs=None,
+        step_per_epoch=None,
+        step_size=None,
+        decay_ratio=None):
     """
     Return learning rate scheduler for optimizer
     """
@@ -12,7 +20,8 @@ def get_lr_scheduler(optimizer, lr_schedule, logger, total_epochs=None, step_per
         assert step_per_epoch is not None
         assert total_epochs is not None
 
-        lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=step_per_epoch*total_epochs)
+        lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(
+            optimizer, T_max=step_per_epoch * total_epochs)
 
     elif lr_schedule == "step":
         assert step_size is not None
@@ -20,12 +29,21 @@ def get_lr_scheduler(optimizer, lr_schedule, logger, total_epochs=None, step_per
 
         logger.info("Step size : {}".format(step_size))
         logger.info("Gamma : {}".format(decay_ratio))
-        lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=step_size, gamma=decay_ratio, last_epoch=-1)
+        lr_scheduler = torch.optim.lr_scheduler.StepLR(
+            optimizer, step_size=step_size, gamma=decay_ratio, last_epoch=-1)
 
     return lr_scheduler
-    
 
-def get_optimizer(model_parameters, optimizer_type, learning_rate, weight_decay, logger, momentum=None, alpha=None, beta=None):
+
+def get_optimizer(
+        model_parameters,
+        optimizer_type,
+        learning_rate,
+        weight_decay,
+        logger,
+        momentum=None,
+        alpha=None,
+        beta=None):
     logger.info("================= Optimizer =================")
     logger.info("Optimizer : {}".format(optimizer_type))
     logger.info("Learning rate : {}".format(learning_rate))
@@ -45,19 +63,17 @@ def get_optimizer(model_parameters, optimizer_type, learning_rate, weight_decay,
 
         logger.info("Momentum : {}".format(momentum))
         optimizer = torch.optim.RMSprop(model_parameters,
-                            lr=lr,
-                            alpha=alpha,
-                            momentum=momentum,
-                            weight_decay=weight_decay)
+                                        lr=lr,
+                                        alpha=alpha,
+                                        momentum=momentum,
+                                        weight_decay=weight_decay)
     elif optimizer_type == "adam":
         assert beta is not None
 
         logger.info("Beta : {}".format(beta))
         optimizer = torch.optim.Adam(model_parameters,
-                            weight_decay=weight_decay,
-                            lr=CONFIG.lr,
-                            betas=(beta, 0.999))
+                                     weight_decay=weight_decay,
+                                     lr=CONFIG.lr,
+                                     betas=(beta, 0.999))
 
     return optimizer
-
-
