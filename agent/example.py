@@ -84,7 +84,7 @@ class ExampleAgent:
     def train(self):
         for epoch in range(self.current_epoch+1, self.config['train']['n_epochs']):
             self.current_epoch = epoch
-            # self._train_one_epoch()
+            self._train_one_epoch()
             self._validate()
             # self.scheduler.step()
 
