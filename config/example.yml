@@ -1,0 +1,25 @@
+agent: "ExampleAgent"
+train:
+  device: "cuda:0"
+  n_epochs: 10
+  n_intervals: 200
+  logdir: "run/example"
+  resume: false
+
+dataset:
+  size: 112
+  train:
+    root: "download/train/CASIA-WebFace"
+  valid:
+    root: "download/test/CFP_FP"
+
+dataloader:
+  batch_size: 64
+  num_workers: 4
+
+model:
+  n_classes: 10575
+
+# Adam
+optimizer:
+  lr: 0.0001
