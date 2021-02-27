@@ -7,16 +7,19 @@ __all__ = [ "ExampleNet" ]
 
 class ExampleNet(nn.Module):
 
-    def __init__(self, n_classes):
+    def __init__(self, n_features, n_classes):
         super().__init__()
+        self.n_features = n_features
         self.n_classes = n_classes
         self.backbone = resnet18(pretrained=True)
-        self.classifier = nn.Linear(512, n_classes)
+        self.embedding = nn.Linear(512, n_features)
+        self.classifier = nn.Linear(n_features, n_classes)
 
     def forward(self, x):
         x = self._forward_backbone(x)
-        outputs = self.classifier(x)
-        return outputs
+        embeds = self.embedding(x)
+        outputs = self.classifier(embeds)
+        return embeds, outputs
 
     def _forward_backbone(self, x):
         x = self.backbone.conv1(x)

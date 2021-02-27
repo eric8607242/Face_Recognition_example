@@ -14,12 +14,8 @@ class PairFaceDataset:
         # Save arguments
         self.root = root
         self.transform = transform
-
         # Read dataset
         self.data = np.load(osp.join(root, 'data.npy'))
-        img_height = self.data.shape[-2]
-        img_width = self.data.shape[-1]
-        self.data = self.data.reshape(-1, 2, 3, img_height, img_width)
         self.label = np.load(osp.join(root, 'label.npy'))
 
     def __len__(self):
