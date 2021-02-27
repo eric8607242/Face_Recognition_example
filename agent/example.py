@@ -92,7 +92,7 @@ class ExampleAgent:
         pass
 
     def resume(self):
-        checkpoint_path = osp.join(self.config['logdir'], 'best.pth')
+        checkpoint_path = osp.join(self.config['train']['logdir'], 'best.pth')
         checkpoint = torch.load(checkpoint_path)
         self.model.load_state_dict(checkpoint['model'])
         self.optimizer.load_state_dict(checkpoint['optimizer'])
@@ -122,7 +122,7 @@ class ExampleAgent:
             # Logging
             if idx % self.config['train']['n_intervals'] == 0:
                 print((f"Epoch {self.current_epoch}:{self.config['train']['n_epochs']}"
-                    f"({int(self.current_epoch/self.config['train']['n_epochs']*100)}%)"
+                    f"({int(idx/len(self.train_loader)*100)}%)"
                     f" Train Loss: {loss.item():.2f},"
                     f" Train Acc: {corrects/batch_size:.2f}"))
         # Logging
@@ -160,6 +160,10 @@ class ExampleAgent:
         TP_ratio, FP_ratio, accs, best_thresholds = evaluate(embeds1, embeds2, labels)
         # Save Checkpoint
         acc = accs.mean()
+        thresh = best_thresholds.mean()
+        print((f"Epoch {self.current_epoch}:{self.config['train']['n_epochs']},"
+            f" Valid Acc: {acc:.2f},"
+            f" Valid Thresh: {thresh:.2f}"))
         if acc > self.current_acc:
             self.current_acc = acc
             self._save_checkpoint()
