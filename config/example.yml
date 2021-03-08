@@ -18,6 +18,7 @@ dataloader:
   num_workers: 4
 
 model:
+  model_name: "mobilefacenet"
   n_features: 256
   n_classes: 10575
 
