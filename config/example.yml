@@ -19,9 +19,14 @@ dataloader:
 
 model:
   model_name: "mobilefacenet"
+  margin_name: "softmax"
   n_features: 256
   n_classes: 10575
+  margin: 0.5
+  s: 32
+
 
 # Adam
 optimizer:
-  lr: 0.0001
+  lr: 0.05
+  weight_decay: 0.00004

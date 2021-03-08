@@ -11,6 +11,7 @@ class Model(nn.Module):
     def __init__(
             self,
             model_config,
+            n_classes,
             bn_momentum=0.1,
             bn_track_running_stats=True):
         super(Model, self).__init__()
