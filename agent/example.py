@@ -12,7 +12,8 @@ from torchvision.datasets import ImageFolder
 from tensorboardX import SummaryWriter
 
 from data.dataset.pair import PairFaceDataset
-from model.example import ExampleNet
+from model import get_model
+from loss import get_margin
 from utils.metric import evaluate
 
 __all__ = [ "ExampleAgent" ]
@@ -55,13 +56,20 @@ class ExampleAgent:
 
         # Model
         # ===================================================================
+        model = get_model(config['model']['model_name'])
+        margin = get_margin(config['model']['margin_name'], config['model']['n_features'], config['model']['n_classes'], config['model']['margin'], config['model']['s'])
+
+        """
         model = ExampleNet(n_features=config['model']['n_features'],
                             n_classes=config['model']['n_classes'])
+        """
         self.model = model.to(self.device)
+        self.margin = margin.to(self.device)
 
         # Optimizer
         # ===================================================================
-        self.optimizer = optim.Adam(self.model.parameters(),
+        self.optimizer = optim.Adam([{'params':self.model.parameters(), 'weight_decay':config['optimizer']['weight_decay']},
+                                     {'params':self.margin.identity_weights}],
                                     lr=config['optimizer']['lr'])
 
         # Scheduler
@@ -110,7 +118,10 @@ class ExampleAgent:
             labels = labels.to(self.device)
             # Forward & Backward
             self.optimizer.zero_grad()
-            _, outputs = self.model(imgs)
+            #_, outputs = self.model(imgs)
+            outputs = self.model(imgs)
+            outputs = self.margin(outputs, labels)
+
             loss = self.criterion(outputs, labels)
             loss.backward()
             self.optimizer.step()
@@ -145,9 +156,11 @@ class ExampleAgent:
             imgs2 = imgs2.to(self.device)
             labels = labels.to(self.device)
             # Extract embeddings
-            embeds1, _ = self.model(imgs1)
+            #embeds1, _ = self.model(imgs1)
+            embeds1 = self.model(imgs1)
             embeds1 = F.normalize(embeds1, p=2)
-            embeds2, _ = self.model(imgs2)
+            #embeds2, _ = self.model(imgs2)
+            embeds2 = self.model(imgs2)
             embeds2 = F.normalize(embeds2, p=2)
             # Accumulates
             all_labels.append(labels.detach().cpu().numpy())
