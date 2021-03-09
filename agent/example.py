@@ -12,8 +12,8 @@ from torchvision.datasets import ImageFolder
 from tensorboardX import SummaryWriter
 
 from data.dataset.pair import PairFaceDataset
-from model import get_model, get_margin
-from config.model_config import get_model_config
+from model import get_model
+from loss import get_margin
 from utils.metric import evaluate
 
 __all__ = [ "ExampleAgent" ]
@@ -56,8 +56,7 @@ class ExampleAgent:
 
         # Model
         # ===================================================================
-        model_config = get_model_config(config['model']['model_name'])
-        model = get_model(model_config)
+        model = get_model(config['model']['model_name'])
         margin = get_margin(config['model']['margin_name'], config['model']['n_features'], config['model']['n_classes'], config['model']['margin'], config['model']['s'])
 
         """

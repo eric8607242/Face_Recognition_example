@@ -1,4 +1,5 @@
 import math
+import yaml
 
 import torch
 import torch.nn as nn
@@ -6,18 +7,12 @@ import torch.nn.functional as F
 
 from .network_utils import get_block
 
+class BaseModel(nn.Module):
+    def __init__(self):
+        super(BaseModel, self).__init__()
 
-class Model(nn.Module):
-    def __init__(
-            self,
-            model_config,
-            n_classes,
-            bn_momentum=0.1,
-            bn_track_running_stats=True):
-        super(Model, self).__init__()
-        self.model_config = model_config
-
-        self.layers = nn.ModuleList()
+    def _construct_model(self, model_config, bn_momentum=0.1, bn_track_running_stats=True):
+        layers = nn.ModuleList()
         for l_cfg in model_config:
             block_type, in_channels, out_channels, stride, kernel_size, group, activation, se, kwargs = l_cfg
 
@@ -33,15 +28,8 @@ class Model(nn.Module):
                               bn_track_running_stats=bn_track_running_stats,
                               **kwargs)
 
-            self.layers.append(layer)
-
-        self._initialize_weights()
-
-    def forward(self, x):
-        for i, l in enumerate(self.layers):
-            x = l(x)
-
-        return x
+            layers.append(layer)
+        return layers
 
     def _initialize_weights(self):
         for m in self.modules():
@@ -57,3 +45,10 @@ class Model(nn.Module):
                 n = m.weight.size(1)
                 m.weight.data.normal_(0, 0.01)
                 m.bias.data.zero_()
+
+
+    def _parse_config(self, config_path):
+        with open(config_path) as f:
+            config = yaml.full_load(f)
+        return config
+
