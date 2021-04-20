@@ -1,0 +1,38 @@
+---
+agent: "FaceNetAgent"
+
+train:
+  device: "cuda:0"
+  n_epochs: 100
+  logdir: "run/facenet"
+  resume: false
+
+dataset:
+  size: 112
+  train:
+    root: "download/train/CASIA-WebFace"
+    label_to_indices: "download/processed/label_to_indices.pth"
+  valid:
+    root: "download/test/CFP_FP"
+
+dataloader:
+  # Train Batch Size
+  P: 16
+  K: 16
+  # Eval Batch Size
+  batch_size: 256
+  num_workers: 8
+
+# FaceNet
+model:
+  in_channels: 3
+  n_features: 128
+
+# Adam Optimizer
+optimizer:
+  lr: 0.001
+  weight_decay: 0.0001
+
+# Margin of triplet loss
+loss:
+  margin: 0.3

@@ -1,4 +1,7 @@
-# Face_Recognition_example
+# Face Recognition Playground
+
+Play with different face recognition techniques and observe the result.
+![example.png](https://i.imgur.com/rqMOLG7.png)
 
 ## Download Dataset
 ```bash
@@ -10,38 +13,28 @@ $ wget -O download/train/CASIA-WebFace.tar.gz https://www.dropbox.com/s/6x03igvb
 $ mkdir -p download/test
 $ wget -O download/test/CFP_FP.tar.gz https://www.dropbox.com/s/e3u7804yk54yqoj/CFP_FP.tar.gz?dl=1
 $ wget -O download/test/LFW.tar.gz https://www.dropbox.com/s/d1y5o66dn8vcpvv/LFW.tar.gz?dl=1
+
+# Untar them by yourself
 ```
 
 ## How to run
 ```bash
+# Train face recognition model with softmax
 $ python3 main.py --config config/example.yml
+
+# Train face recognition model with triplet loss
+$ python3 main.py --config config/facenet.yml
 ```
 
-### Eric Codebase
-This is a example repo for face recognition. We cover the basic component for face recognition. (e.g., loss function, data loader, and inference)
+## Comparision Result
+|              | Face Verification Accuracy | Pretrained Model                                                   |
+|:------------:|:--------------------------:|--------------------------------------------------------------------|
+| Softmax Loss |            0.87            | [Link](https://www.dropbox.com/s/dulk91gxcb47hfa/example.pth?dl=1) |
+| Triplet Loss |            0.90            | [Link](https://www.dropbox.com/s/gk0ybamj2zowreh/facenet.pth?dl=1) |
 
-**The main components in this repo.**
-* Loss function
-    * SphereFace
-    * CosFace
-    * ArgFace
+## Visualization of Embedding Space
+- **Softmax CrossEntrop**
+![softmax-distribution](https://i.imgur.com/GqqQvUG.png)
 
-**Actually, I am still confused about some implementation detail for face recognition. Hope anyone can help me to clarify more implementation detail.**
-
-#### Train
-* Softmax
-```
-python3 train.py --title [EXPERIMENT TITLE] --margin-module-name softmax
-```
-* SphereFace
-```
-python3 train.py --title [EXPERIMENT TITLE] --margin-module-name sphereface
-```
-* CosFace
-```
-python3 train.py --title [EXPERIMENT TITLE] --margin-module-name cosface
-```
-* ArcFace
-```
-python3 train.py --title [EXPERIMENT TITLE] --margin-module-name arcface
-```
+- **Triplet Loss**
+![triplet-distribution](https://i.imgur.com/aTuXq4A.png)
