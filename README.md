@@ -33,8 +33,8 @@ $ python3 main.py --config config/facenet.yml
 | Triplet Loss |            0.90            | [Link](https://www.dropbox.com/s/gk0ybamj2zowreh/facenet.pth?dl=1) |
 
 ## Visualization of Embedding Space
-- **Softmax CrossEntrop**
+- **Softmax CrossEntrop**  
 ![softmax-distribution](https://i.imgur.com/GqqQvUG.png)
 
-- **Triplet Loss**
+- **Triplet Loss**  
 ![triplet-distribution](https://i.imgur.com/aTuXq4A.png)
